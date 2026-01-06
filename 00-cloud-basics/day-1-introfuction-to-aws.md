@@ -5,14 +5,6 @@ The focus is on understanding cloud basics and why AWS is widely used.
 
 
 
-## What is Cloud Computing?
-
-Cloud computing means using computing resources such as servers, storage, and databases over the internet instead of owning and managing physical machines.
-
-Users can access these resources whenever needed and pay only for what they use.
-
-
-
 ## What is Public Cloud?
 
 Public cloud is a cloud model where the infrastructure is owned and managed by a cloud provider and shared among multiple users.
