@@ -51,6 +51,18 @@ Each topic includes:
 
 
 
+## Note on Learning Progress
+
+I began my AWS learning journey earlier and have already covered several foundational topics. However, due to irregular posting, those topics were not documented on GitHub in sequence.
+
+To maintain clarity and consistency in this repository, I am **starting documentation from my current topic — AWS CodeCommit**.
+
+All previously learned topics will be **added later in a structured and organized manner**.  
+This repository represents my **hands-on AWS learning journey**, where each topic is practiced and documented with real understanding.
+
+
+
 ##  Current Status
 
 This repository is actively updated as I continue learning and strengthening my cloud engineering skills.
+
