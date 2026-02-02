@@ -3,6 +3,11 @@
 This repository captures my personal journey of learning Amazon Web Services (AWS) from the ground up, with a strong focus on understanding concepts deeply and applying them through hands-on practice.
 
 Instead of just collecting notes, this repository reflects how I think, practice, make mistakes, and improve as a cloud learner.
+## Learning Reference
+
+This project was developed as part of my hands-on learning while following the AWS DevOps Zero to Hero YouTube series by Abhishek Veeramalla sir.
+
+The videos were used purely as a learning reference. All implementation, configuration, debugging, and troubleshooting in this repository were performed independently by me. The errors documented here reflect real issues I encountered and resolved during the project.
 
 
 
