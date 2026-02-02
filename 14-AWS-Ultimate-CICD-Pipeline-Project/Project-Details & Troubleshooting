@@ -1,0 +1,240 @@
+# AWS End-to-End CI/CD Pipeline – Project Details and Troubleshooting Notes
+
+This document contains a complete description of how the AWS end-to-end CI/CD pipeline was implemented, along with the real issues faced during setup and the exact troubleshooting steps taken to resolve them.
+
+The purpose of this file is to document the learning journey, mistakes, and fixes encountered while building the pipeline.
+
+---
+
+PROJECT OVERVIEW
+
+The goal of this project was to build a fully automated CI/CD pipeline on AWS to deploy a Python Flask application packaged as a Docker container onto an Amazon EC2 instance.
+
+The pipeline automates the following process:
+- Detect code changes from GitHub
+- Build a Docker image
+- Push the image to Docker Hub
+- Deploy the updated application to EC2 using AWS CodeDeploy
+
+The project includes both Continuous Integration (CI) and Continuous Deployment (CD).
+
+---
+
+ARCHITECTURE AND SERVICES USED
+
+Source Control:
+GitHub is used to store the Flask application source code, Dockerfile, deployment scripts, and configuration files.
+
+Continuous Integration:
+AWS CodeBuild is used to build the Docker image and push it to Docker Hub.
+
+Continuous Deployment:
+AWS CodeDeploy is used to deploy the application onto the EC2 instance using lifecycle hooks defined in appspec.yml.
+
+Pipeline Orchestration:
+AWS CodePipeline connects GitHub, CodeBuild, and CodeDeploy into a single automated pipeline.
+
+Target Environment:
+Amazon EC2 (Ubuntu) is used as the deployment server, running Docker containers.
+
+---
+
+APPLICATION AND REPOSITORY SETUP
+
+A simple Python Flask application was used.
+
+The following files were added at the root of the GitHub repository:
+
+- appspec.yml  
+This file is required by CodeDeploy and defines where files should be copied and which scripts should run during deployment.
+
+- start_container.sh  
+This script pulls the latest Docker image from Docker Hub and starts the container on EC2.
+
+- stop_container.sh  
+This script stops and removes any running container to avoid port conflicts during redeployment.
+
+These scripts ensure that every deployment starts with a clean application state.
+
+---
+
+EC2 INSTANCE SETUP
+
+An Ubuntu EC2 instance was launched to host the application.
+
+The following configurations were performed:
+- Public IP enabled
+- Internet Gateway attached to the VPC
+- Route table updated with a 0.0.0.0/0 route
+- Docker installed
+- CodeDeploy agent installed manually
+- EC2 instance tagged for CodeDeploy targeting
+
+Example EC2 tag used:
+Key: Name  
+Value: sample-python-app
+
+---
+
+IAM ROLES CONFIGURATION
+
+Three IAM roles were required for the pipeline to work correctly.
+
+EC2 INSTANCE ROLE
+
+This role was attached to the EC2 instance and included the following permissions:
+- AmazonEC2RoleforAWSCodeDeploy
+- AmazonS3ReadOnlyAccess
+
+This role allows the EC2 instance to communicate with CodeDeploy and download deployment artifacts from Amazon S3.
+
+CODEDEPLOY SERVICE ROLE
+
+This role was created with:
+- Trusted service: codedeploy.amazonaws.com
+- Policy attached: AWSCodeDeployRole
+
+This role allows CodeDeploy to manage deployment operations.
+
+CODEPIPELINE ROLE
+
+This role is used by CodePipeline to trigger deployments.
+Initially, the pipeline failed because this role did not have permission to create deployments.
+
+The issue was fixed by attaching:
+- AWSCodeDeployFullAccess
+
+---
+
+CODEDEPLOY CONFIGURATION
+
+A CodeDeploy application was created using the EC2/On-Premises platform.
+
+A deployment group was created with the following configuration:
+- Deployment type: In-place
+- EC2 instance selection based on tags
+- CodeDeploy service role attached
+
+The deployment group links the application to the correct EC2 instance.
+
+---
+
+CODEPIPELINE CONFIGURATION
+
+The pipeline was configured with the following stages:
+
+Source Stage:
+- GitHub connected using AWS CodeConnections
+
+Build Stage:
+- AWS CodeBuild builds the Docker image
+- The image is pushed to Docker Hub
+
+Deploy Stage:
+- AWS CodeDeploy deploys the application to EC2 using appspec.yml
+
+Once configured, any push to GitHub automatically triggers the entire pipeline.
+
+---
+
+ERRORS FACED AND TROUBLESHOOTING
+
+SSH CONNECTION TIMEOUT
+
+Issue:
+Unable to SSH into the EC2 instance.
+
+Cause:
+- Internet Gateway not attached
+- Route table missing default internet route
+
+Fix:
+- Attached Internet Gateway to VPC
+- Added 0.0.0.0/0 route
+- Enabled public IP for EC2
+
+---
+
+IAM ROLE NOT VISIBLE FOR EC2
+
+Issue:
+IAM role was not visible while attaching it to the EC2 instance.
+
+Cause:
+The role was created for CodeDeploy instead of EC2.
+
+Fix:
+Recreated the IAM role using EC2 as the trusted service.
+
+---
+
+CODEPIPELINE AUTHORIZATION ERROR
+
+Error:
+codedeploy:CreateDeployment is not authorized
+
+Cause:
+CodePipeline IAM role lacked CodeDeploy permissions.
+
+Fix:
+Attached AWSCodeDeployFullAccess to the CodePipeline role.
+
+---
+
+DEPLOYMENT FAILED WITH HEALTH_CONSTRAINTS
+
+Issue:
+Deployment failed with HEALTH_CONSTRAINTS error.
+
+Cause:
+The deployment lifecycle failed on the EC2 instance because the application bundle could not be downloaded.
+
+---
+
+DOWNLOADBUNDLE FAILED (UNKNOWNERROR)
+
+Issue:
+CodeDeploy failed during the DownloadBundle phase.
+
+Cause:
+EC2 IAM role did not have permission to read artifacts from S3.
+
+Fix:
+Attached AmazonS3ReadOnlyAccess to the EC2 IAM role and restarted the CodeDeploy agent.
+
+---
+
+DOCKER PORT BINDING ISSUE
+
+Issue:
+Deployment failed because the Docker container was already running on the required port.
+
+Cause:
+Old container was not stopped before starting a new one.
+
+Fix:
+Implemented stop_container.sh to stop and remove existing containers before starting a new deployment.
+
+---
+
+VERIFICATION
+
+After successful deployment, the application was verified using:
+
+docker ps
+
+The Docker container was confirmed to be running successfully, and the application was accessible using the EC2 public IP.
+
+---
+
+KEY LEARNINGS
+
+- IAM misconfiguration is a common cause of CI/CD failures
+- CodeDeploy agent must be running on the EC2 instance
+- appspec.yml must be placed at the root of the repository
+- EC2 instances require S3 read access for deployment bundles
+- Cleaning up old containers is necessary for stable deployments
+- Real DevOps learning happens through debugging and troubleshooting
+
+---
+
