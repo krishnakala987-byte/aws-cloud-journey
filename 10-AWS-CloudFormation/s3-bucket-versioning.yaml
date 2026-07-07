@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Creates an S3 bucket with versioning enabled. Used to practice stacks and drift detection.
+
+Resources:
+  MyPracticeBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      # bucket names must be globally unique, change before reuse
+      BucketName: krishna-cft-practice-bucket-2024
+      VersioningConfiguration:
+        Status: Enabled
+
+Outputs:
+  BucketName:
+    Description: Name of the created bucket
+    Value: !Ref MyPracticeBucket
