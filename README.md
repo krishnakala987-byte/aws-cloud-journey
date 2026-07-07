@@ -42,7 +42,10 @@ This helps me think like a cloud engineer, not just a student.
 - Identity and Access Management (IAM)
 - EC2 and Compute Concepts
 - AWS Networking (VPC, Subnets, Security Groups, NACLs)
-- More services will be added as I progress
+- Route 53, S3, AWS CLI and CloudFormation
+- CI/CD on AWS (CodeCommit, CodePipeline, CodeBuild, CodeDeploy)
+- Monitoring, Serverless, Containers (CloudWatch, Lambda, ECR, ECS, EKS)
+- Terraform, AWS Config, Load Balancing, Migration and FinOps
 
 
 
@@ -58,11 +61,10 @@ Each topic includes:
 
 ## Note on Learning Progress
 
-I began my AWS learning journey earlier and have already covered several foundational topics. However, due to irregular posting, those topics were not documented on GitHub in sequence.
+I began my AWS learning journey earlier and had already covered several foundational topics. However, due to irregular posting, those topics were not documented on GitHub in sequence, so documentation originally started from AWS CodeCommit.
 
-To maintain clarity and consistency in this repository, I am **starting documentation from my current topic — AWS CodeCommit**.
+The earlier topics (EC2, VPC, Security Groups and NACL, Route 53, S3, AWS CLI and CloudFormation) have now been **added back in a structured manner**, so the repository is complete from the fundamentals onwards.
 
-All previously learned topics will be **added later in a structured and organized manner**.  
 This repository represents my **hands-on AWS learning journey**, where each topic is practiced and documented with real understanding.
 
 
